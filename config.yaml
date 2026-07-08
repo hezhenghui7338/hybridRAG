@@ -1,0 +1,45 @@
+# =========================================================
+# Hybrid Search RAG configuration
+# All fields can be overridden by env vars (see .env.example)
+# =========================================================
+
+embedding:
+  model_name: "BAAI/bge-m3"
+  reranker_name: "BAAI/bge-reranker-v2-m3"
+  device: "mps"          # mps | cuda | cpu
+  max_length: 8192       # BGE-M3 supports up to 8192 tokens
+  use_fp16: true
+
+storage:
+  storage_dir: "./storage"
+  collection_name: "hybrid_rag"
+
+chunking:
+  chunk_size: 512
+  chunk_overlap: 64
+  keep_separator: true
+
+retrieve:
+  top_k_dense: 20
+  top_k_sparse: 20
+  top_k_final: 5
+  rrf_k: 60              # RRF constant; 60 is the conventional default
+  candidate_pool: 50     # how many candidates to send to reranker
+
+rerank:
+  enabled: true
+  top_n: 30              # rerank this many then slice top_k_final
+
+generate:
+  host: "http://127.0.0.1:11434"
+  model: "qwen3.5:4b"
+  temperature: 0.2
+  num_ctx: 4096
+  timeout: 300
+  system_prompt: |
+    你是一个严谨的知识助手。请仅根据【参考资料】回答用户问题。
+    要求:
+    1. 答案必须基于参考资料中的事实,不得编造。
+    2. 若参考资料不足以回答问题,直接说明"根据现有资料无法回答"。
+    3. 回答末尾用 [1][2] 这样的角标标明引用了哪几条资料。
+    4. 用中文回答,语言风格简洁清晰。

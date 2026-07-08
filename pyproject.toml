@@ -1,0 +1,64 @@
+[project]
+name = "hybrid-rag"
+version = "0.1.0"
+description = "Hybrid-Search RAG system: BGE-M3 (dense+sparse) + BM25 + RRF + Reranker + Ollama"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+authors = [
+    { name = "hzh" },
+]
+dependencies = [
+    # Embedding & Reranker (BGE-M3 / BGE-reranker-v2-m3 via official FlagEmbedding)
+    "FlagEmbedding>=1.2.10",
+    # transformers pin: FlagEmbedding 1.2.x is incompatible with transformers 5.x
+    # (it relies on prepare_for_model which was removed). Cap at 4.x.
+    "transformers>=4.45,<5.0",
+    "torch>=2.1.0",
+    # Vector store
+    "chromadb>=0.5.0",
+    # BM25
+    "rank-bm25>=0.2.2",
+    # Document loaders
+    "pymupdf>=1.24.0",          # PDF
+    "python-frontmatter>=1.1.0", # MD with frontmatter
+    "markdown>=3.6",
+    # LLM client (Ollama)
+    "ollama>=0.3.0",
+    # Config & utils
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "tqdm>=4.66.0",
+    "pydantic>=2.6.0",
+    # HTTP API
+    "fastapi>=0.110.0",
+    "uvicorn>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.3.0",
+]
+
+[project.scripts]
+rag-ingest = "rag.scripts.ingest:main"
+rag-query = "rag.scripts.query:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rag"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

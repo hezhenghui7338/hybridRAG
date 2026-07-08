@@ -1,0 +1,13 @@
+# Hybrid RAG system
+
+rag_storage/     # vector + bm25 persistent storage
+data/raw/        # drop source documents here
+data/processed/  # intermediate processed docs (gitignored)
+.venv/           # uv-managed virtualenv (gitignored)
+storage/         # index persistence (gitignored)
+*.pyc
+__pycache__/
+.DS_Store
+.env
+data/*
+storage/*
